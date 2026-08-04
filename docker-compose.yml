@@ -1,4 +1,4 @@
-#deploy 5 containerized services
+#deploy 5 containerized service
 version: '3.8'
 
 services:
