@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  database-service:
+    build: ./database-service
+    container_name: database-service
+    environment:
+      - POSTGRES_DB=aqi_db
+      - POSTGRES_USER=aqi_user
+      - POSTGRES_PASSWORD=aqi_pass
+    ports:
+      - "5432:5432"
+
+  ai-inference-service:
+    build: ./ai-inference-service
+    container_name: ai-inference-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database-service
+
+  api-gateway-service:
+    build: ./api-gateway-service
+    container_name: api-gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ai-inference-service
+
+  ingestion-service:
+    build: ./ingestion-service
+    container_name: ingestion-service
+    depends_on:
+      - api-gateway-service
+
+  dashboard-service:
+    build: ./dashboard-service
+    container_name: dashboard-service
+    ports:
+      - "8501:8501"
+    depends_on:
+      - database-service
