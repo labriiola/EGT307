@@ -28,6 +28,16 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASS
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
 ---
 apiVersion: v1
 kind: Service

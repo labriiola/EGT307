@@ -28,6 +28,11 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASS
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
 ---
 apiVersion: v1
 kind: Service
