@@ -17,6 +17,11 @@ spec:
           image: yixinn/egt307-ai-inference-service:latest
           ports:
             - containerPort: 8000
+          resources:
+            requests:
+              cpu: "250m"
+            limits:
+              cpu: "500m"
           env:
             - name: DB_USER
               valueFrom:
