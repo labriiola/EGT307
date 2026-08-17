@@ -33,6 +33,15 @@ spec:
                 configMapKeyRef:
                   name: db-config
                   key: DB_NAME
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: db-pvc
 ---
 apiVersion: v1
 kind: Service
