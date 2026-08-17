@@ -3,15 +3,18 @@ import pandas as pd
 import xgboost as xgb
 import psycopg2
 import json
+import os
 
 app = FastAPI(title="AQI Inference Service")
 
 # Database connection credentials (matches your Postgres Dockerfile)
-DB_HOST = "database-service"
-DB_NAME = "aqi_db"
-DB_USER = "aqi_user"
-DB_PASS = "aqi_pass"
-
+# Reads from environment variables if set (e.g. by Kubernetes via the Secret),
+# otherwise falls back to these defaults - keeps docker-compose working unchanged
+DB_HOST = os.environ.get("DB_HOST", "database-service")
+DB_NAME = os.environ.get("DB_NAME", "aqi_db")
+DB_USER = os.environ.get("DB_USER", "aqi_user")
+DB_PASS = os.environ.get("DB_PASS", "aqi_pass")
+    
 # Load the trained model once when the container starts,
 # not on every single request - loading from disk is slow,
 # so this way it only happens once
