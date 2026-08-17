@@ -129,6 +129,14 @@ kubectl rollout history shows 6 tracked revisions for the AI Inference Service
 deployment. If a bad update were pushed, kubectl rollout undo would revert to the
 previous working revision.
 
+### Persistent Storage
+
+`database-service` uses a PersistentVolumeClaim (`db-pvc.yaml`, 1Gi) mounted at
+PostgreSQL's data directory, so stored readings and predictions survive pod restarts
+and rescheduling rather than being lost. Verified directly: after deleting the running
+database pod, the replacement pod's logs showed "Skipping initialization" — confirming
+it found and reused the existing data rather than starting from a blank database.
+
 ### Docker Hub Images
 
 All images are public under yixinn/: egt307-ingestion-service,
@@ -147,6 +155,3 @@ egt307-database-service, egt307-dashboard-service.
   given the project timeline.
 - Ingestion replays real historical data in random order to simulate a live feed for
   demo purposes, rather than representing true real-time sensor streaming.
-- database-service does not currently use a PersistentVolumeClaim, so stored
-  readings/predictions do not survive a pod restart. Acceptable for this project's
-  scope, but a production deployment would need persistent storage.
