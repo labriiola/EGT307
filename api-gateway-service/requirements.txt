@@ -1,3 +1,8 @@
+# The web framework this service is built on
 fastapi
+
+# The server that actually runs the FastAPI app and listens for requests, this is what the Dockerfile's CMD line starts
 uvicorn
+
+# Lets this service make outbound HTTP requests to ai-inference-service, this is how the gateway actually forwards data onward
 httpx
