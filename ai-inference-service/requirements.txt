@@ -1,6 +1,17 @@
+# Loads sensor data into a table (DataFrame) so it is in the right shape for the model to read
 pandas
+
+# Provides LabelEncoder, used during training to turn risk category names (Good/Moderate/Unhealthy/Hazardous) into numbers the model can work with
 scikit-learn
+
+# The actual machine learning library, loads the trained model file and runs the prediction itself
 xgboost
+
+# The web framework this service is built on, defines the /predict endpoint that receives sensor data and sends back a prediction
 fastapi
+
+# The server that actually runs the FastAPI app and listens for incoming requests, this is what the Dockerfile's CMD line starts
 uvicorn
+
+# Let Python connect to the PostgreSQL database to save each prediction ("-binary" is a pre-compiled version, so it installs without needing extra system level build tools inside the container)
 psycopg2-binary
