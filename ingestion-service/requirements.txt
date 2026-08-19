@@ -1,2 +1,5 @@
+# Loads and reads rows from cleaned_data.csv
 pandas
+
+# Makes the outbound HTTP calls to the gateway's /predict endpoint
 requests
