@@ -1,14 +1,17 @@
-#deploy 5 containerized service
+# Deploys all 5 microservices together on the same local Docker network, so they can reach each other by service name (e.g. "database-service")
 version: '3.8'
 
 services:
   database-service:
+    # Builds the image from this folder's own Dockerfile, instead of pulling from Docker Hub, useful for fast local testing without needing to push/pull images every time code changes
     build: ./database-service
     container_name: database-service
+    # These match what's inside database-service's own Dockerfile, this is Docker Compose's separate way of setting the same values, since Compose doesn't use Kubernetes' Secret/ConfigMap system
     environment:
       - POSTGRES_DB=aqi_db
       - POSTGRES_USER=aqi_user
       - POSTGRES_PASSWORD=aqi_pass
+    # Maps the container's port 5432 to the same port on your actual machine, so you could connect a database tool directly if needed
     ports:
       - "5432:5432"
 
@@ -17,6 +20,7 @@ services:
     container_name: ai-inference-service
     ports:
       - "8000:8000"
+    # Starts this only after database-service has started
     depends_on:
       - database-service
 
@@ -31,6 +35,8 @@ services:
   ingestion-service:
     build: ./ingestion-service
     container_name: ingestion-service
+    # Depends on the gateway, not inference directly, matches the real traffic path (ingestion -> gateway -> inference), and this
+    # is what fixed the bug where ingestion originally bypassed the gateway entirely
     depends_on:
       - api-gateway-service
 
@@ -39,5 +45,6 @@ services:
     container_name: dashboard-service
     ports:
       - "8501:8501"
+    # Depends only on the database, not gateway or inference matches the architecture, since dashboard only ever reads from the database directly, it never talks to the other two services
     depends_on:
       - database-service
