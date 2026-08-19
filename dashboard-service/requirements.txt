@@ -1,4 +1,12 @@
+# The framework this whole dashboard app is built with
 streamlit
+
+# Holds the database query results in a table for display
 pandas
+
+# Lets SQLAlchemy connect to a PostgreSQL database.
+# Not directly imported in main.py, but SQLAlchemy needs it working behind the scenes whenever the connection string starts with "postgresql://"
 psycopg2-binary
+
+# Provides create_engine(), the tool main.py uses to connect to the database
 sqlalchemy
