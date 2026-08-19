@@ -91,6 +91,7 @@ minikube start
 minikube addons enable metrics-server
 kubectl apply -f kubernetes/db-secret.yaml
 kubectl apply -f kubernetes/db-config.yaml
+kubectl apply -f kubernetes/db-pvc.yaml
 kubectl apply -f kubernetes/database-deployment.yaml
 kubectl apply -f kubernetes/ai-inference-deployment.yaml
 kubectl apply -f kubernetes/ai-inference-hpa.yaml
