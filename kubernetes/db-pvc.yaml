@@ -1,10 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # This name is what database-deployment.yaml references as "claimName: db-pvc" in its volumes section
   name: db-pvc
 spec:
   accessModes:
+    # ReadWriteOnce means one pod can write to this storage at a time, correct for us, since we only ever run 1 database replica
     - ReadWriteOnce
   resources:
     requests:
+      # How much storage we're requesting, 1 gigabyte, plenty for this project's scale (predictions and readings are small rows)
       storage: 1Gi

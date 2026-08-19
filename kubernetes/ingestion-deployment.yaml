@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: ingestion-service
 spec:
+  # Only 1 copy, it's just replaying data on a loop, no reason to duplicate it
   replicas: 1
   selector:
     matchLabels:
@@ -14,4 +15,8 @@ spec:
     spec:
       containers:
         - name: ingestion-service
+          # Pulls the image we built and pushed to Docker Hub
           image: yixinn/egt307-ingestion-service:latest
+# no "ports" section here, and no separate Service object below this file at all, every other service in this project needed one
+# of those, but ingestion never receives any incoming connections.
+# It only ever makes outbound calls to the gateway; nothing needs to find or reach ingestion itself, so there's nothing to expose

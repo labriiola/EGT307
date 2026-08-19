@@ -6,7 +6,9 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
+    # Points this HPA at the ai-inference-service Deployment specifically, this is what it's actually scaling up and down
     name: ai-inference-service
+  # Never fewer than 2 replicas (our normal baseline), never more than 4
   minReplicas: 2
   maxReplicas: 4
   metrics:
@@ -15,4 +17,6 @@ spec:
         name: cpu
         target:
           type: Utilization
+          # If average CPU usage across all inference pods goes above 50% of what they requested, Kubernetes adds another replica.
+          # If usage drops back down, it removes one automatically, with no code we had to write for it
           averageUtilization: 50

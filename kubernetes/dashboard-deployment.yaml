@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: dashboard-service
 spec:
+  # Only 1 copy, it's just displaying data, no reason to duplicate it
   replicas: 1
   selector:
     matchLabels:
@@ -14,6 +15,7 @@ spec:
     spec:
       containers:
         - name: dashboard-service
+          # Pulls the image we built and pushed to Docker Hub
           image: yixinn/egt307-dashboard-service:latest
           ports:
             - containerPort: 8501
@@ -23,6 +25,9 @@ kind: Service
 metadata:
   name: dashboard-service
 spec:
+  # NodePort is different from database/gateway/inference's default type.
+  # Those only ever get reached by other pods inside the cluster, so the default type is fine. Dashboard needs to be opened in an actual
+  # browser from outside the cluster entirely, NodePort is what makes that possible, it's what "minikube service dashboard-service" uses to actually open the page
   type: NodePort
   selector:
     app: dashboard-service

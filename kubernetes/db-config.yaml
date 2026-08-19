@@ -1,7 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  # This name is what database-deployment.yaml and ai-inference-deployment.yaml reference as "db-config" when pulling values via configMapKeyRef
   name: db-config
 data:
+  # Unlike the Secret, these values are stored plainly, no encoding needed, a hostname and database name aren't sensitive the way a password is, so there's no reason to hide them
   DB_HOST: database-service
   DB_NAME: aqi_db

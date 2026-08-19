@@ -1,8 +1,10 @@
+# DEPLOYMENT: tells Kubernetes to run our database container
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: database-service
 spec:
+  # Only 1 copy of the database, unlike inference, a database shouldn't be duplicated, since there's only one source of truth
   replicas: 1
   selector:
     matchLabels:
@@ -10,14 +12,17 @@ spec:
   template:
     metadata:
       labels:
+        # This label is how the Service below finds this specific pod
         app: database-service
     spec:
       containers:
         - name: database-service
+          # Pulls the image we built and pushed to Docker Hub
           image: yixinn/egt307-database-service:latest
           ports:
             - containerPort: 5432
           env:
+            # Username and password pulled from the Secret, not hardcoded, so credentials aren't sitting in plain text
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -28,21 +33,27 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASS
+            # Database name pulled from the ConfigMap, not sensitive, so it doesn't need to be hidden the way the password does
             - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
                   name: db-config
                   key: DB_NAME
+            # Tells Postgres to store its data one folder deeper than its default location, required when mounting external
+            # storage directly onto the data directory, otherwise Postgres can fail to start
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
+          # Connects the PVC (defined below) to an actual folder path inside the container, so Postgres writes to persistent storage instead of temporary storage that vanishes on restart
           volumeMounts:
             - name: db-storage
               mountPath: /var/lib/postgresql/data
       volumes:
         - name: db-storage
           persistentVolumeClaim:
+            # Points at our PVC (db-pvc.yaml), this is what actually makes the data survive a pod restart
             claimName: db-pvc
 ---
+# SERVICE: gives the database a stable address other pods can reach
 apiVersion: v1
 kind: Service
 metadata:

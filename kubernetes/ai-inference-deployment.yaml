@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: ai-inference-service
 spec:
+  # 2 replicas, this is our scaling requirement satisfied. Two copies of inference run at once, and Kubernetes' Service (below) automatically splits incoming requests between them
   replicas: 2
   selector:
     matchLabels:
@@ -14,15 +15,18 @@ spec:
     spec:
       containers:
         - name: ai-inference-service
+          # Pulls the image we built and pushed to Docker Hub
           image: yixinn/egt307-ai-inference-service:latest
           ports:
             - containerPort: 8000
+          # Resource requests/limits, required for the HPA to actually calculate a CPU usage percentage. Without this, there's nothing for autoscaling to measure against
           resources:
             requests:
               cpu: "250m"
             limits:
               cpu: "500m"
           env:
+            # Username and password from the Secret
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
@@ -33,6 +37,7 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASS
+            # Host and database name from the ConfigMap
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
