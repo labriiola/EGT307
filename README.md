@@ -138,6 +138,23 @@ and rescheduling rather than being lost. Verified directly: after deleting the r
 database pod, the replacement pod's logs showed "Skipping initialization" — confirming
 it found and reused the existing data rather than starting from a blank database.
 
+### Service Isolation Testing
+
+In addition to testing all five services together via Docker Compose and Kubernetes,
+each image was also verified running completely standalone (docker run, with no other
+containers active) to confirm correct behaviour independent of the other services:
+
+- database-service - starts cleanly and logs "database system is ready to accept
+  connections".
+- ai-inference-service - the trained model loads successfully at startup with no
+  database present, and the health check endpoint responds correctly.
+- api-gateway-service - starts cleanly with no database or inference service present,
+  and the health check endpoint responds correctly.
+- dashboard-service - fails to connect to the (absent) database as expected, but
+  degrades gracefully, showing "No data found" instead of crashing.
+- ingestion-service - retries gracefully on its normal 5-second loop when the
+  (absent) gateway is unreachable, instead of crashing.
+
 ### Docker Hub Images
 
 All images are public under yixinn/: egt307-ingestion-service,
